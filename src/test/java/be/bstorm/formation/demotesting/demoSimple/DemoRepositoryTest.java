@@ -1,6 +1,5 @@
 package be.bstorm.formation.demotesting.demoSimple;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,12 +8,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) A mettre si on veut tester sur la vraie db
 public class DemoRepositoryTest {
 
     @Autowired
@@ -61,5 +61,33 @@ public class DemoRepositoryTest {
 
         //Assert
         assertFalse(pasPresent.isPresent());
+    }
+
+    @Test
+    void findByPhrase_when_not_empty(){
+
+        //Arrange
+        DemoTest savedEntity = entityManager.merge(entity);
+        entityManager.flush();
+
+        //Act
+        List<DemoTest> foundEntities = testRepository.findByPhrase(savedEntity.getPhrase());
+
+        //Assert
+        assertFalse(foundEntities.isEmpty());
+        assertEquals(savedEntity.getPhrase(), foundEntities.get(0).getPhrase());
+        assertEquals(1,foundEntities.size());
+    }
+
+    @Test
+    void findByPhrase_when_empty(){
+
+        //Arrange
+
+        //Act
+        List<DemoTest> foundEntities = testRepository.findByPhrase("coucou les javas");
+
+        //Assert
+        assertTrue(foundEntities.isEmpty());
     }
 }
