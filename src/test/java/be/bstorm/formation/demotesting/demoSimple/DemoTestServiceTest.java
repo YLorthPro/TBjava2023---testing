@@ -1,6 +1,5 @@
 package be.bstorm.formation.demotesting.demoSimple;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -10,15 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DemoTestServiceTest {
 
+/*   trois "A" -> Arrange, Act, Assert
+     Arrange -> Préparation du test: Instancier les objets, les différentes variables,...
+     Act -> Appel de la méthode à tester
+     Assert -> Vérification du résultat de la méthode*/
+
     DemoTestService demoTestService = new DemoTestService();
 
     @Test
     public void testConcatenation() {
-
-        // trois "A" -> Arrange, Act, Assert
-        // Arrange -> Préparation du test: Instancier les objets, les différentes variables,...
-        // Act -> Appel de la méthode à tester
-        // Assert -> Vérification du résultat de la méthode
 
         // Arrange
         String motA = "Hello";
