@@ -1,5 +1,6 @@
 package be.bstorm.formation.demotesting.demoApp;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,6 +9,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,6 +49,15 @@ public class PersonneServiceTest {
     }
 
     @Test
+    void getById_when_not_found() {
+        when(personneRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Optional<PersonneEntity> searchEntity = personneService.getById(1L);
+
+        assertFalse(searchEntity.isPresent());
+    }
+
+    @Test
     void create_when_ok(){
         // Arrange
         when(personneRepository.save(any(PersonneEntity.class))).thenReturn(entity);
@@ -64,6 +77,72 @@ public class PersonneServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void getAll_WhenNoData_ReturnsEmptyList() {
+        when(personneRepository.findAll()).thenReturn(Collections.emptyList());
+        List<PersonneEntity> entities = personneService.getAll();
+        assertTrue(entities.isEmpty());
+    }
+
+    @Test
+    void getAll() {
+        List<PersonneEntity> entities = Arrays.asList(entity, entity, entity);
+        when(personneRepository.findAll()).thenReturn(entities);
+
+        List<PersonneEntity> result = personneService.getAll();
+
+        assertEquals(entities, result);
+        verify(personneRepository, times(1)).findAll();
+    }
+
+    @Test
+    void update_when_ok() {
+        when(personneRepository.findById(anyLong())).thenReturn(Optional.of(entity));
+        when(personneRepository.save(any(PersonneEntity.class))).thenReturn(entity);
+
+        personneService.update(personne, 1L);
+
+        verify(personneRepository, times(1)).findById(1L);
+        verify(personneRepository, times(1)).save(any(PersonneEntity.class));
+    }
+
+    @Test
+    void update_WhenNullPassed_ThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            personneService.update(null, 1L);
+        });
+
+        String expectedMessage = "Pas cool";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void update_WhenIdNotFound_ThrowsException() {
+        when(personneRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> {
+            personneService.update(personne, 1L);
+        });
+
+        String expectedMessage = "Toujours pas cool";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void delete_when_ok() {
+        when(personneRepository.existsById(anyLong())).thenReturn(true);
+        doNothing().when(personneRepository).deleteById(anyLong());
+
+        personneService.delete(1L);
+
+        verify(personneRepository, times(1)).existsById(1L);
+        verify(personneRepository, times(1)).deleteById(1L);
     }
 
 }
