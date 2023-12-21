@@ -6,15 +6,12 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.awt.*;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -43,7 +40,7 @@ public class PersonneControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(personneController).build();
 
         String json = "{\"name\":\"Geoffrey\", \"birthdate\":\"2023-12-10\", \"height\":180}";
-        mockMvc.perform("/personne/create").contentType(MediaType.APPLICATION_JSON).content(json).andExpect(status().isOk());
+        mockMvc.perform(post("/personne/create").contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk());
 
         verify(personneService, times(1)).create(any(Personne.class));
     }
