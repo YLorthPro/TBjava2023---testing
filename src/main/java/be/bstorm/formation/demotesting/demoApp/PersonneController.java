@@ -1,6 +1,7 @@
 package be.bstorm.formation.demotesting.demoApp;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class PersonneController {
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody Personne form){
+    public void create(@RequestBody @Valid Personne form){
         personneService.create(form);
     }
 

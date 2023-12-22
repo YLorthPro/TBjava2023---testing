@@ -35,7 +35,7 @@ public class PersonneControllerTest {
     }
 
     @Test
-    public void create() throws Exception{
+    public void create_whenOK() throws Exception{
         doNothing().when(personneService).create(any(Personne.class));
 
         mockMvc = MockMvcBuilders.standaloneSetup(personneController).build();
@@ -44,6 +44,18 @@ public class PersonneControllerTest {
         mockMvc.perform(post("/personne/create").contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isOk());
 
         verify(personneService, times(1)).create(any(Personne.class));
+    }
+
+    @Test
+    public void create_when_nameTooShort() throws Exception{
+        doNothing().when(personneService).create(any(Personne.class));
+
+        mockMvc = MockMvcBuilders.standaloneSetup(personneController).build();
+
+        String json = "{\"name\":\"Ly\", \"birthdate\":\"2023-12-10\", \"height\":180}";
+        mockMvc.perform(post("/personne/create").contentType(MediaType.APPLICATION_JSON).content(json)).andExpect(status().isBadRequest());
+
+        verify(personneService, times(0)).create(any(Personne.class));
     }
 
     @Test
